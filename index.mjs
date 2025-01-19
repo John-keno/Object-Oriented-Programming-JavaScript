@@ -1,10 +1,16 @@
 import inquirer from "inquirer";
 
 class Hospital {
+  static totalHospitals = 0;
   constructor(name, address) {
     this.name = name;
     this.address = address;
     this.departments = [];
+    Hospital.totalHospitals++;
+  }
+
+  static createHospital(name, address) {
+    return new Hospital(name, address);
   }
 
   addDepartment(department) {
@@ -25,10 +31,16 @@ class Hospital {
 }
 
 class Department {
+  static totalDepartments = 0;
   constructor(departmentId, name) {
     this.departmentId = departmentId;
     this.name = name;
     this.doctors = [];
+    Department.totalDepartments++;
+  }
+
+  static createDepartment(departmentId, name) {
+    return new Department(departmentId, name);
   }
 
   addDoctor(doctor) {
@@ -47,22 +59,28 @@ class Department {
 }
 
 class Doctor {
+  static totalDoctors = 0;
   constructor(doctorId, name, specialty) {
     this.doctorId = doctorId;
     this.name = name;
     this.specialty = specialty;
     this.patients = [];
+    Doctor.totalDoctors++;
+  }
+
+  static createDoctor(doctorId, name, specialty) {
+    return new Doctor(doctorId, name, specialty);
   }
 
   diagnosePatient(patient, diagnosis) {
     console.log(
-      `Doctor ${this.name} diagnosed patient ${patient.name} with ${diagnosis}.`
+      `${this.name} diagnosed patient ${patient.name} with ${diagnosis}.`
     );
   }
 
   prescribeMedication(patient, medication) {
     console.log(
-      `Doctor ${this.name} prescribed ${medication.name} to patient ${patient.name}.`
+      `${this.name} prescribed ${medication.name} to patient ${patient.name}.`
     );
   }
 
@@ -72,11 +90,17 @@ class Doctor {
 }
 
 class Patient {
+  static totalPatients = 0;
   constructor(patientId, name, ailment) {
     this.patientId = patientId;
     this.name = name;
     this.ailment = ailment;
     this.appointments = [];
+    Patient.totalPatients++;
+  }
+
+  static createPatient(patientId, name, ailment) {
+    return new Patient(patientId, name, ailment);
   }
 
   register() {
@@ -94,11 +118,13 @@ class Patient {
 }
 
 class Appointment {
+  static totalAppointments = 0;
   constructor(appointmentId, date, doctor, patient) {
     this.appointmentId = appointmentId;
     this.date = date;
     this.doctor = doctor;
     this.patient = patient;
+    Appointment.totalAppointments++;
   }
 
   scheduleAppointment() {
@@ -115,23 +141,27 @@ class Appointment {
 }
 
 class Medication {
+  static totalMedications = 0;
   constructor(medicationId, name, dosage) {
     this.medicationId = medicationId;
     this.name = name;
     this.dosage = dosage;
+    Medication.totalMedications++;
   }
-
+  static createMedication(medicationId, name, dosage) {
+    return new Medication(medicationId, name, dosage);
+  }
   administerMedication() {
     console.log(`Administered ${this.dosage} of ${this.name}.`);
   }
 }
 
 // Demonstration values of the Hospital Management System
-const hospital = new Hospital("Jkode Hospital", "2 kode Street");
-const cardiology = new Department(1, "Cardiology");
-const doc_keno = new Doctor(1, "Dr. Keno", "Cardiologist");
+const hospital = Hospital.createHospital("Jkode Hospital", "2 kode Street");
+const cardiology = Department.createDepartment(1, "Cardiology");
+const doc_keno = Doctor.createDoctor(1, "Dr. Keno", "Cardiologist");
 const ailment = "Heart Disease";
-const medication = new Medication(1, "Aspirin", "100mg");
+const medication = Medication.createMedication(1, "Aspirin", "100mg");
 let patient = null;
 hospital.addDepartment(cardiology);
 cardiology.addDoctor(doc_keno);
@@ -189,12 +219,15 @@ function promptAppointmentActions() {
   ]);
 }
 async function mainMenu() {
+  console.log(
+    `\nWelcome to the Hospital Management System!" \n Total Available hospital => ${Hospital.totalHospitals}`
+  );
   const { action } = await promtMainActions();
 
   switch (action) {
     case "Register Patient":
       const { name } = await promptPatientInfo();
-      patient = new Patient(1, name, ailment);
+      patient = Patient.createPatient(1, name, ailment);
       patient.register();
       mainMenu();
       break;
@@ -230,6 +263,15 @@ async function mainMenu() {
       }
       mainMenu();
       break;
+    case "Exit":
+      console.log("Goodbye!");
+      console.log(`Total Hospitals: ${Hospital.totalHospitals}`);
+      console.log(`Total Departments: ${Department.totalDepartments}`);
+      console.log(`Total Doctors: ${Doctor.totalDoctors}`);
+      console.log(`Total Patients: ${Patient.totalPatients}`);
+      console.log(`Total Appointments: ${Appointment.totalAppointments}`);
+      console.log(`Total Medications: ${Medication.totalMedications}`);
+      return;
   }
 }
 
